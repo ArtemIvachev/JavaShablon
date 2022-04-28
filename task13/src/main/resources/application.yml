@@ -2,6 +2,6 @@
 program:
   - name: in
   - student:
-    - name: Semyon
-    - lastname: Esaev
-    - group: IKBO-01-20
+    - name: Artem
+    - lastname: Ivachev
+    - group: IKBO-24-20
