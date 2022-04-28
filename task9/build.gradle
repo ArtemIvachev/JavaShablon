@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id "com.palantir.docker" version "0.32.0"
+    id "com.palantir.docker-run" version "0.32.0"
+}
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+//add
+jar {
+    manifest {
+        attributes "Main-Class": "Main"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+}
+task MakeJar(type: Copy) {
+    copy{
+        from tasks.jar
+        into "/src/Dock"
+    }
+    finalizedBy {
+        docker
+    }
+}
+docker{
+    dependsOn tasks.jar
+    name "${project.name}:${project.version}"
+    dockerfile file("/src/Dock/Dockerfile")
+    files file("/src/Dock/Shablon 9-1.0-SNAPSHOT.jar")
+}
+
+dockerRun{
+    name "${project.name}"
+    image "${project.name}:${project.version}"
+    daemonize false
+    ports "8080:8080"
+    clean true
+}
+
